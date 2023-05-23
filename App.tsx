@@ -1,31 +1,22 @@
 import { useState, useEffect } from 'react'
-import { Session, createClient } from '@supabase/supabase-js'
-import { Auth } from '@supabase/auth-ui-react'
-import { ThemeSupa } from '@supabase/auth-ui-shared'
+import { Text, Button } from '@rneui/themed'
+import useAuth from './services/use-auth'
 
-const supabase = createClient('https://esotonfmhgweizgemmub.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzb3RvbmZtaGd3ZWl6Z2VtbXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODQ4MzY5NjEsImV4cCI6MjAwMDQxMjk2MX0.cYEAih7_1oqrEDSP8X8dFadkv5xEiotN7wq5lPXzFis')
 
 export default function App() {
-  const [session, setSession] = useState<Session|null>(null)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
+  const { doLogin,
+    doLogout,
+    tokenObject,
+    loading } = useAuth()
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  if (!session) {
-    return (<Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />)
+  if (loading) {
+    return <Text>Loading...</Text>
   }
-  else {
-    return (<div>Logged in!</div>)
+
+  if (!tokenObject) {
+    return <Button onPress={() => doLogin()}>Login</Button>
+  } else {
+    return <Button onPress={() => doLogout()}>Logout</Button>
   }
 }
