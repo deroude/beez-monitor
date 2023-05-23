@@ -1,0 +1,19 @@
+{
+  "background_color": "#ffffff",
+  "theme_color":"#ffffff",
+  "display": "standalone",
+  "lang": "ro",
+  "name": "Beez Monitor",
+  "short_name": "Beez",
+  "scope": "/",
+  "start_url": "/",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}
