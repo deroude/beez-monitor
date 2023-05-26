@@ -1,0 +1,32 @@
+{
+    "collection": "device",
+    "database": "beez",
+    "roles": [
+        {
+            "name": "readOwnWriteOwn",
+            "apply_when": {},
+            "document_filters": {
+                "write": {
+                    "%or": [
+                        {
+                            "owner_id": "%%user.id"
+                        },
+                        {
+                            "owner_id": {
+                                "$exists": false
+                            }
+                        }
+                    ]
+                },
+                "read": {
+                    "owner_id": "%%user.id"
+                }
+            },
+            "read": true,
+            "write": true,
+            "insert": true,
+            "delete": true,
+            "search": true
+        }
+    ]
+}
