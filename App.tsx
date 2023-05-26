@@ -12,7 +12,6 @@ import { API_BASE } from '@env';
 import { setContext } from '@apollo/client/link/context';
 import useAuth from './services/use-auth';
 
-
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const theme = createTheme({

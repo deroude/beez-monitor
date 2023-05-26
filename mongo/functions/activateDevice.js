@@ -1,6 +1,4 @@
-import {randomBytes} from 'crypto'
-
-exports = async function(request, response){
+exports = async function (request, response) {
   // Find the name of the MongoDB service you want to use (see "Linked Data Sources" tab)
   const serviceName = "mongodb-atlas";
 
@@ -11,20 +9,20 @@ exports = async function(request, response){
   // Get a collection from the context
   const deviceCollection = context.services.get(serviceName).db(dbName).collection(collName);
 
+  const { factoryToken } = JSON.parse(request.body.text())
+
   try {
     // Execute a FindOne in MongoDB 
-    const token = randomBytes(48).toString('base64')
     const device = await deviceCollection.findOneAndUpdate(
-      { armIp: request.headers['X-Cluster-Client-Ip'][0] },
-      { $set: { token } }
+      { factoryToken, status: 'cold'},
+      { $set: { status: 'active' } }
     );
 
-    if(!!device){
+    if (!!device) {
       response.setStatusCode(200);
-      response.setBody(token);
       return;
     }
-  } catch(err) {
+  } catch (err) {
     console.log("Error occurred while executing findOne:", err.message);
   }
   response.setStatusCode(403)
