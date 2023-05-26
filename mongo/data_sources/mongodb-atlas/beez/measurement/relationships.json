@@ -1,0 +1,8 @@
+{
+    "device": {
+        "ref": "#/relationship/mongodb-atlas/beez/device",
+        "source_key": "device",
+        "foreign_key": "_id",
+        "is_list": false
+    }
+}

@@ -1,48 +1,69 @@
-import { Text, Button } from '@rneui/themed'
-import useAuth from './services/use-auth'
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Home from './pages/home/Home';
+import { ThemeProvider, createTheme } from '@rneui/themed';
+import { RootStackParamList } from './navigation';
+import Login from './pages/login/Login';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import styles from './app.scss';
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
 import { API_BASE } from '@env';
-import useMeasurementApi from './services/use-measurement-api';
+import { setContext } from '@apollo/client/link/context';
+import useAuth from './services/use-auth';
 
-export default function App() {
 
-  const { doLogin,
-    doLogout,
-    tokenObject,
-    loading } = useAuth()
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
-  if (loading) {
-    return <Text>Loading...</Text>
-  }
+const theme = createTheme({
+  lightColors: {
+    primary: '#FF9666',
+    secondary: '#174C4F',
+    background: '#1D2541',
+  },
+  components: {
+    Text: {
+      style: {
+        fontFamily: 'Exo 2',
+      },
+    },
+  },
+});
 
-  if (!tokenObject) {
-    return <Button onPress={() => doLogin()}>Login</Button>
-  } else {
+const App = () => {
 
-    const httpLink = createHttpLink({
-      uri: API_BASE,
-    });
+  const graphQLLink = createHttpLink({
+    uri: API_BASE,
+  });
 
-    const authLink = setContext((_, { headers }) => {
-      return {
-        headers: {
-          ...headers,
-          authorization: `Bearer ${tokenObject.accessToken}`
-        }
+  const { tokenObject } = useAuth();
+
+  const authLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        authorization: tokenObject ? `Bearer ${tokenObject.accessToken}` : "",
       }
-    });
+    }
+  });
 
-    const client = new ApolloClient({
-      link: authLink.concat(httpLink),
-      cache: new InMemoryCache()
-    });
+  const client = new ApolloClient({
+    link: authLink.concat(graphQLLink),
+    cache: new InMemoryCache()
+  });
 
-    const { loading, data } = useMeasurementApi({ devices: ["8efc7eeb-ccd6-4a81-864d-33ad7e645ee2"] })
+  return (
+    <ThemeProvider theme={theme}>
+      <ApolloProvider client={client}>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Home" component={Home} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ApolloProvider>
+    </ThemeProvider>
+  );
+};
 
-    return <ApolloProvider client={client}>
-      <Text>{JSON.stringify(data, null, '\t')}</Text>
-      <Button onPress={() => doLogout()}>Logout</Button>
-    </ApolloProvider >
-  }
-}
+export default App;

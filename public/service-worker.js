@@ -15,7 +15,7 @@ self.addEventListener('install', function (evt) {
 self.addEventListener('fetch', function (evt) {
   console.log('The service worker is serving the asset.');
   // Try network and if it fails, go for the cached copy.
-  evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
+  evt.respondWith(fromNetwork(evt.request, 10000).catch(function () {
     return fromCache(evt.request);
   }));
 });

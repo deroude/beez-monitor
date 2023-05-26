@@ -1,0 +1,1 @@
+![Activation](./docs/activation_diagram.svg)
