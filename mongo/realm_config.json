@@ -7,6 +7,6 @@
     "deployment_model": "LOCAL",
     "allowed_request_origins": [
         "http://localhost:19000",
-        "https://beez-watcher.web.app"
+        "https://relaxed-vacherin-b3850b.netlify.app"
     ]
 }
