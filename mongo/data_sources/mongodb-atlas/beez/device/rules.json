@@ -9,10 +9,10 @@
                 "write": {
                     "%or": [
                         {
-                            "user_id": "%%user.id"
+                            "userId": "%%user.id"
                         },
                         {
-                            "user_id": {
+                            "userId": {
                                 "$exists": false
                             }
                         }

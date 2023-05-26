@@ -16,7 +16,7 @@ exports = async function (request, response) {
   try {
     // Execute a FindOne in MongoDB 
     const device = await deviceCollection.findOneAndUpdate(
-      { factoryToken, status: 'cold'},
+      { factoryToken, status: 'cold', userId: context.user.id},
       { $set: { status: 'active' } }
     );
 
