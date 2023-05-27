@@ -40,6 +40,7 @@ const App = () => {
   const { realmAccessToken } = useAuth();
 
   const authLink = setContext((_, { headers }) => {
+    if(!realmAccessToken) throw new Error('no auth');
     return {
       headers: {
         ...headers,

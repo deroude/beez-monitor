@@ -4,7 +4,7 @@ import { HTTP_ENDPOINT_BASE } from '@env';
 import useMeasurementApi from '../../services/use-measurement-api';
 import { Button, useTheme } from '@rneui/themed';
 import useAuth from '../../services/use-auth';
-import { HomeTabParamList, RootStackScreenProps } from '../../navigation';
+import { HomeTabParamList, RootStackParamList, RootStackScreenProps } from '../../navigation';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -15,6 +15,8 @@ import Device from '../device/Device';
 import Charts from '../charts/Charts';
 import Logs from '../logs/Logs';
 import Management from '../management/Management';
+import { useEffect } from 'react';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
@@ -32,6 +34,14 @@ const icons = {
 const Home = () => {
 
   const { theme } = useTheme();
+  const { realmAccessToken } = useAuth();
+  const nav = useNavigation<NavigationProp<RootStackParamList>>();
+
+  useEffect(() => {
+    if (!realmAccessToken) {
+      nav.navigate('Login');
+    }
+  }, [nav, realmAccessToken])
 
   return (
     <Tab.Navigator sceneContainerStyle={styles.scene} screenOptions={({ route }) => ({
