@@ -7,17 +7,13 @@
             "apply_when": {},
             "document_filters": {
                 "write": {
-                    "%or": [
-                        {
-                            "userId": "%%user.id"
-                        },
-                        {
-                            "userId": {
-                                "$exists": false
-                            }
-                        }
-                    ]
-                },
+                    "userId": {
+                      "$in": [
+                        "%%user.id",
+                        null
+                      ]
+                    }
+                  },
                 "read": {
                     "user_id": "%%user.id"
                 }

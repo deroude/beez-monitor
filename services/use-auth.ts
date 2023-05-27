@@ -15,7 +15,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
-import { ENV, OPENID_CLIENTID, OPENID_ISSUER, APP_SCHEME } from '@env';
+import { ENV, OPENID_CLIENTID, OPENID_ISSUER, APP_SCHEME, APP_ID, API_BASE } from '@env';
 import { openAuthSessionAsync } from 'expo-web-browser';
 import Constants from 'expo-constants';
 
@@ -42,7 +42,9 @@ export interface UseAuth {
     doLogin: (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
     doLogout: () => Promise<void>,
     tokenObject?: TokenResponse,
-    loading: boolean
+    loading: boolean,
+    realmAccessToken?: string,
+    userId?: string
 }
 
 export function useAuth(): UseAuth {
@@ -55,13 +57,20 @@ export function useAuth(): UseAuth {
 
     const [loading, setLoading] = useState<boolean>(true);
 
+    const [realmAccessToken, setRealmAccessToken] = useState<string | undefined>();
+
+    const [userId, setUserId] = useState<string | undefined>();
+
     const [request, result, promptAsync] = useAuthRequest(
         {
             clientId: OPENID_CLIENTID,
             redirectUri,
             responseType: ResponseType.Code,
-            scopes: ['openid', 'profile', 'email', 'offline_access'],
-            usePKCE: true
+            scopes: ['profile', 'email', 'offline_access'],
+            usePKCE: true,
+            extraParams: {
+                audience: APP_ID
+            }
         },
         discovery
     );
@@ -112,6 +121,26 @@ export function useAuth(): UseAuth {
         }
     }, [result]);
 
+    const fetchRealmAccessToken = async () => {
+        const tokenResult = await fetch(`${API_BASE}/auth/providers/custom-token/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token: tokenObject?.accessToken })
+        });
+
+        return tokenResult.json();
+    }
+
+    useEffect(() => {
+        if (!tokenObject?.accessToken) return;
+        fetchRealmAccessToken().then(({ access_token, user_id }: { access_token: string, user_id: string }) => {
+            setRealmAccessToken(access_token);
+            setUserId(user_id);
+        });
+    }, [tokenObject])
+
     const doLogout = async () => {
         if (!tokenObject || !discovery) return;
         if (tokenObject.refreshToken)
@@ -125,6 +154,8 @@ export function useAuth(): UseAuth {
         doLogin: async () => promptAsync(redirectConfig),
         doLogout,
         tokenObject,
+        realmAccessToken,
+        userId,
         loading
     }
 }

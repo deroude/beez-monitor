@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { API_BASE } from '@env';
+import { HTTP_ENDPOINT_BASE } from '@env';
 import useMeasurementApi from '../../services/use-measurement-api';
 import { Button, useTheme } from '@rneui/themed';
 import useAuth from '../../services/use-auth';
@@ -11,7 +11,7 @@ import Icons from '@expo/vector-icons/MaterialCommunityIcons';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import styles from './home.scss';
-import Status from '../status/Status';
+import Device from '../device/Device';
 import Charts from '../charts/Charts';
 import Logs from '../logs/Logs';
 import Management from '../management/Management';
@@ -23,7 +23,7 @@ const Tab = createBottomTabNavigator<HomeTabParamList>();
 const MenuIcon = ({ color, size, name }: { color: string, size: number, name: string }) => <Icons name={name as any} size={size} color={color} />
 
 const icons = {
-  'Status': 'beehive-outline',
+  'Device': 'beehive-outline',
   'Charts': 'chart-bar',
   'Logs': 'view-list',
   'Management': 'cog-outline'
@@ -42,7 +42,7 @@ const Home = () => {
       tabBarInactiveTintColor: theme.colors.secondary,
       tabBarStyle: styles['tab-bar']
     })}>
-      <Tab.Screen name="Status" component={Status} />
+      <Tab.Screen name="Device" component={Device} />
       <Tab.Screen name="Charts" component={Charts} />
       <Tab.Screen name="Logs" component={Logs} />
       <Tab.Screen name="Management" component={Management} />

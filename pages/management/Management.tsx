@@ -2,6 +2,7 @@ import { View } from "react-native";
 import useAuth from "../../services/use-auth";
 import { Button } from "@rneui/themed";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from "react-i18next";
 
 const Management = () => {
     const { doLogin,
@@ -16,8 +17,10 @@ const Management = () => {
         navigation.navigate('Login')
     }
 
+    const {t} = useTranslation();
+
     return <View>
-        <Button onPress={() => logout()}>Logout</Button>
+        <Button onPress={() => logout()}>{t('logout')}</Button>
     </View>
 }
 

@@ -2,15 +2,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './pages/home/Home';
 import { ThemeProvider, createTheme } from '@rneui/themed';
-import { RootStackParamList } from './navigation';
+import { RootStackParamList, linking } from './navigation';
 import Login from './pages/login/Login';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import styles from './app.scss';
+import i18n from './translation';
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from '@apollo/client';
 import { API_BASE } from '@env';
 import { setContext } from '@apollo/client/link/context';
 import useAuth from './services/use-auth';
+import { I18nextProvider } from 'react-i18next';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -32,16 +34,16 @@ const theme = createTheme({
 const App = () => {
 
   const graphQLLink = createHttpLink({
-    uri: API_BASE,
+    uri:`${API_BASE}/graphql`,
   });
 
-  const { tokenObject } = useAuth();
+  const { realmAccessToken } = useAuth();
 
   const authLink = setContext((_, { headers }) => {
     return {
       headers: {
         ...headers,
-        authorization: tokenObject ? `Bearer ${tokenObject.accessToken}` : "",
+        Authorization: 'Bearer ' + realmAccessToken
       }
     }
   });
@@ -53,14 +55,18 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <ApolloProvider client={client}>
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Home" component={Home} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </ApolloProvider>
+      <I18nextProvider i18n={i18n}>
+        <ApolloProvider client={client}>
+          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment
+@ts-ignore */}
+          <NavigationContainer linking={linking}>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen name="Login" component={Login} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ApolloProvider>
+      </I18nextProvider>
     </ThemeProvider>
   );
 };

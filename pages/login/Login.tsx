@@ -9,10 +9,10 @@ import styles from './login.scss'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import LogoSvg from './logo.svg';
+import { useTranslation } from "react-i18next";
 
 const Login = ({ navigation }: RootStackScreenProps<'Login'>) => {
     const { doLogin,
-        doLogout,
         tokenObject,
         loading } = useAuth();
 
@@ -21,9 +21,11 @@ const Login = ({ navigation }: RootStackScreenProps<'Login'>) => {
             navigation.navigate('Home')
     }, [tokenObject])
 
+    const { t } = useTranslation();
+
     return <View style={styles.container}>
         <LogoSvg width={'60%'} />
-        {!loading && <Button size="lg" onPress={() => doLogin()}>Login</Button>}
+        {!loading && <Button size="lg" onPress={() => doLogin()}>{t('login')}</Button>}
     </View>
 }
 

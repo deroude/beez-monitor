@@ -1,6 +1,5 @@
 exports = async function (request, response) {
 
-  console.log(JSON.stringify(request));
   // Find the name of the MongoDB service you want to use (see "Linked Data Sources" tab)
   const serviceName = "mongodb-atlas";
 
@@ -11,13 +10,13 @@ exports = async function (request, response) {
   // Get a collection from the context
   const deviceCollection = context.services.get(serviceName).db(dbName).collection(collName);
 
-  const { factoryToken } = JSON.parse(request.body.text())
+  const { factoryToken, name } = JSON.parse(request.body.text())
 
   try {
     // Execute a FindOne in MongoDB 
     const device = await deviceCollection.findOneAndUpdate(
       { factoryToken, status: 'cold'},
-      { $set: { status: 'active', userId: context.user.id } }
+      { $set: { status: 'active', userId: context.user.id, name } }
     );
 
     if (!!device) {
